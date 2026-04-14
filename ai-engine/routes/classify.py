@@ -99,8 +99,24 @@ def classify():
 
     except FileNotFoundError as e:
         logger.error(f"Classifier model missing: {e}")
-        return jsonify({"success": False, "error": "Classifier model not trained yet."}), 503
+        return jsonify({
+            "success":    True,
+            "category":   "other",
+            "confidence": 0.5,
+            "topK":       [{"category": "other", "confidence": 0.5}],
+            "note":       "Classifier not yet trained. Add more expenses to enable AI categorisation.",
+        })
 
     except Exception as e:
+        # Handle sklearn's NotFittedError gracefully — model file exists but hasn't been fitted yet
+        if 'not fitted' in str(e).lower() or 'notfitted' in type(e).__name__.lower():
+            logger.warning(f"Classifier not fitted yet, returning default: {e}")
+            return jsonify({
+                "success":    True,
+                "category":   "other",
+                "confidence": 0.5,
+                "topK":       [{"category": "other", "confidence": 0.5}],
+                "note":       "AI model warming up. Category will improve as you add more expenses.",
+            })
         logger.exception(f"Classification failed: {e}")
         return jsonify({"success": False, "error": "Classification failed. Please try again."}), 500
