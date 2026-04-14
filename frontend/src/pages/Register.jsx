@@ -110,7 +110,7 @@ export default function Register() {
                 <input
                   type="text"
                   className={`input ${errors.name ? 'border-red-500/50' : ''}`}
-                  placeholder="Aarav Shah"
+                  placeholder="Peter Parker"
                   value={form.name}
                   onChange={set('name')}
                   autoComplete="name"
