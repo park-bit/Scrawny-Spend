@@ -42,6 +42,9 @@ const env = {
   RATE_LIMIT_MAX_REQUESTS: parseInt(optional('RATE_LIMIT_MAX_REQUESTS', '100'), 10),
 
     LOG_LEVEL: optional('LOG_LEVEL', 'info'),
+
+  SMTP_USER: optional('SMTP_USER', ''),
+  SMTP_PASS: optional('SMTP_PASS', ''),
 };
 
 module.exports = env;

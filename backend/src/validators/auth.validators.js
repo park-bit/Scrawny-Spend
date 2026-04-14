@@ -58,7 +58,13 @@ const changePasswordSchema = Joi.object({
   newPassword:     passwordField.label('New password'),
 });
 
+/** POST /api/auth/verify-otp */
+const verifyOtpSchema = Joi.object({
+  email: emailField,
+  otp:   Joi.string().length(6).required().messages({ 'any.required': 'OTP is required.', 'string.length': 'OTP must be exactly 6 characters.' }),
+});
+
 module.exports = {
   registerSchema, loginSchema, refreshSchema,
-  updateProfileSchema, changePasswordSchema,
+  updateProfileSchema, changePasswordSchema, verifyOtpSchema,
 };

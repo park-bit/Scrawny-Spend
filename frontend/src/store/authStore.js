@@ -26,6 +26,14 @@ const useAuthStore = create(
       register: async (payload) => {
         set({ isLoading: true });
         const { data } = await authService.register(payload);
+        set({ isLoading: false });
+        // Since OTP is enabled, register does NOT return tokens immediately
+        return data.data; 
+      },
+
+      verifyOtp: async (payload) => {
+        set({ isLoading: true });
+        const { data } = await authService.verifyOtp(payload);
         const { user, accessToken, refreshToken } = data.data;
         localStorage.setItem('accessToken',  accessToken);
         localStorage.setItem('refreshToken', refreshToken);

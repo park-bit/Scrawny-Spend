@@ -20,13 +20,14 @@ const { protect }      = require('../middleware/auth');
 const authController   = require('../controllers/auth.controller');
 const {
   registerSchema, loginSchema, refreshSchema,
-  updateProfileSchema, changePasswordSchema,
+  updateProfileSchema, changePasswordSchema, verifyOtpSchema,
 } = require('../validators/auth.validators');
 
 router.use(authLimiter);
 
 // Public
 router.post('/register',        validate(registerSchema),       authController.register);
+router.post('/verify-otp',      validate(verifyOtpSchema),      authController.verifyOtp);
 router.post('/login',           validate(loginSchema),          authController.login);
 router.post('/refresh',         validate(refreshSchema),        authController.refresh);
 router.post('/logout',                                          authController.logout);

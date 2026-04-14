@@ -10,7 +10,9 @@ const User   = require('../models/User');
 const AppError = require('../utils/AppError');
 const env    = require('../config/env');
 const logger = require('../utils/logger');
+const { sendVerificationEmail } = require('./emailService');
 
+const generateOtp = () => Math.floor(100000 + Math.random() * 900000).toString();
 
 const buildPayload = (user) => ({
   id: user._id.toString(), email: user.email, name: user.name, currency: user.currency, hasGeminiKey: !!user.geminiApiKey,
@@ -42,13 +44,29 @@ const generateTokenPair = (user) => ({
 
 
 const register = async ({ name, email, password, currency }) => {
-  const existing = await User.findOne({ email: email.toLowerCase() }).lean();
-  if (existing) throw new AppError('An account with this email already exists.', 409, 'EMAIL_TAKEN');
+  let user = await User.findOne({ email: email.toLowerCase() }).select('+otp +otpExpiresAt');
+  
+  if (user) {
+    if (user.isVerified) {
+      throw new AppError('An account with this email already exists.', 409, 'EMAIL_TAKEN');
+    }
+    // Reprovision unverified user
+    user.name = name;
+    user.passwordHash = password;
+    user.currency = currency || 'INR';
+  } else {
+    user = new User({ name, email, passwordHash: password, currency: currency || 'INR', isVerified: false });
+  }
 
-  const user = await User.create({ name, email, passwordHash: password, currency: currency || 'INR' });
-  logger.info(`New user registered: ${user.email} (${user._id})`);
-  const { accessToken, refreshToken } = generateTokenPair(user);
-  return { user: user.toJSON(), accessToken, refreshToken };
+  const otp = generateOtp();
+  user.otp = otp;
+  user.otpExpiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
+  await user.save();
+
+  logger.info(`OTP generated for: ${user.email}`);
+  await sendVerificationEmail(user.email, otp);
+
+  return { requiresOtp: true, email: user.email };
 };
 
 const login = async ({ email, password }) => {
@@ -59,6 +77,8 @@ const login = async ({ email, password }) => {
     throw new AppError('Incorrect email or password.', 401, 'INVALID_CREDENTIALS');
   if (!user.isActive)
     throw new AppError('This account has been deactivated.', 403, 'ACCOUNT_INACTIVE');
+  if (!user.isVerified)
+    throw new AppError('Please verify your email to log in.', 401, 'NOT_VERIFIED');
 
   logger.info(`User logged in: ${user.email} (${user._id})`);
   const { accessToken, refreshToken } = generateTokenPair(user);
@@ -128,4 +148,23 @@ const changePassword = async (userId, { currentPassword, newPassword }) => {
   logger.info(`Password changed: ${user.email}`);
 };
 
-module.exports = { register, login, refreshTokens, getProfile, updateProfile, changePassword };
+const verifyOtp = async ({ email, otp }) => {
+  const user = await User.findOne({ email: email.toLowerCase() }).select('+otp +otpExpiresAt');
+  if (!user) throw new AppError('User not found.', 404, 'USER_NOT_FOUND');
+  if (user.isVerified) throw new AppError('User is already verified.', 400, 'ALREADY_VERIFIED');
+
+  if (!user.otp || user.otp !== otp || !user.otpExpiresAt || user.otpExpiresAt < new Date()) {
+    throw new AppError('Invalid or expired OTP.', 401, 'INVALID_OTP');
+  }
+
+  user.isVerified = true;
+  user.otp = undefined;
+  user.otpExpiresAt = undefined;
+  await user.save();
+
+  logger.info(`User verified: ${user.email}`);
+  const { accessToken, refreshToken } = generateTokenPair(user);
+  return { user: user.toJSON(), accessToken, refreshToken };
+};
+
+module.exports = { register, login, refreshTokens, getProfile, updateProfile, changePassword, verifyOtp };
