@@ -1,0 +1,24 @@
+# ── Web framework ─────────────────────────────────────────
+flask==3.0.3
+gunicorn==22.0.0          # production WSGI server for Render
+
+# ── ML core ───────────────────────────────────────────────
+numpy==1.26.4
+pandas==2.2.2
+scikit-learn==1.4.2
+joblib==1.4.2
+scipy==1.13.1
+joblib==1.4.2             # model serialisation (.pkl)
+
+# ── NLP / text features ───────────────────────────────────
+# No heavy transformers – TF-IDF only.  Free-tier safe.
+# nltk is included for optional stopword removal.
+nltk==3.9.1
+
+# ── Lightweight ANN (CPU-only) ────────────────────────────
+# tensorflow-cpu pulls ~130 MB on Render free tier (512 MB RAM limit).
+# We use a 3-layer Keras Sequential model; no GPU ops needed.
+tensorflow-cpu==2.17.0
+
+# ── Utilities ─────────────────────────────────────────────
+python-dotenv==1.0.1

@@ -1,0 +1,23 @@
+{
+  "samples": 542,
+  "classes": [
+    "business",
+    "education",
+    "entertainment",
+    "food",
+    "freelance",
+    "gift",
+    "health",
+    "investment",
+    "other",
+    "other_income",
+    "personal_care",
+    "salary",
+    "shopping",
+    "transport",
+    "travel",
+    "utilities"
+  ],
+  "cv_accuracy_mean": 0.6791369351002379,
+  "cv_accuracy_std": 0.04208474330931864
+}
