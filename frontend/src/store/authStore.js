@@ -41,6 +41,20 @@ const useAuthStore = create(
         return user;
       },
 
+      requestPasswordReset: async (payload) => {
+        set({ isLoading: true });
+        const { data } = await authService.requestPasswordReset(payload);
+        set({ isLoading: false });
+        return data;
+      },
+
+      resetPassword: async (payload) => {
+        set({ isLoading: true });
+        const { data } = await authService.resetPassword(payload);
+        set({ isLoading: false });
+        return data;
+      },
+
       logout: async () => {
         try { await authService.logout(); } catch { /* ignore */ }
         localStorage.removeItem('accessToken');

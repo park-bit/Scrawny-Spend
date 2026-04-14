@@ -21,6 +21,7 @@ const authController   = require('../controllers/auth.controller');
 const {
   registerSchema, loginSchema, refreshSchema,
   updateProfileSchema, changePasswordSchema, verifyOtpSchema,
+  requestPasswordResetSchema, resetPasswordSchema,
 } = require('../validators/auth.validators');
 
 router.use(authLimiter);
@@ -30,6 +31,8 @@ router.post('/register',        validate(registerSchema),       authController.r
 router.post('/verify-otp',      validate(verifyOtpSchema),      authController.verifyOtp);
 router.post('/login',           validate(loginSchema),          authController.login);
 router.post('/refresh',         validate(refreshSchema),        authController.refresh);
+router.post('/request-password-reset', validate(requestPasswordResetSchema), authController.requestPasswordReset);
+router.post('/reset-password',  validate(resetPasswordSchema),  authController.resetPassword);
 router.post('/logout',                                          authController.logout);
 
 // Protected

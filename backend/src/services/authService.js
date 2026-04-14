@@ -77,7 +77,7 @@ const login = async ({ email, password }) => {
     throw new AppError('Incorrect email or password.', 401, 'INVALID_CREDENTIALS');
   if (!user.isActive)
     throw new AppError('This account has been deactivated.', 403, 'ACCOUNT_INACTIVE');
-  if (!user.isVerified)
+  if (user.isVerified === false) // Let undefined legacy accounts pass
     throw new AppError('Please verify your email to log in.', 401, 'NOT_VERIFIED');
 
   logger.info(`User logged in: ${user.email} (${user._id})`);
@@ -167,4 +167,33 @@ const verifyOtp = async ({ email, otp }) => {
   return { user: user.toJSON(), accessToken, refreshToken };
 };
 
-module.exports = { register, login, refreshTokens, getProfile, updateProfile, changePassword, verifyOtp };
+const requestPasswordReset = async ({ email }) => {
+  const user = await User.findOne({ email: email.toLowerCase() });
+  if (!user) throw new AppError('User not found.', 404, 'USER_NOT_FOUND');
+
+  const otp = generateOtp();
+  user.otp = otp;
+  user.otpExpiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
+  await user.save();
+
+  logger.info(`Password reset OTP generated for: ${user.email}`);
+  await sendVerificationEmail(user.email, otp, true);
+};
+
+const resetPassword = async ({ email, otp, newPassword }) => {
+  const user = await User.findOne({ email: email.toLowerCase() }).select('+otp +otpExpiresAt');
+  if (!user) throw new AppError('User not found.', 404, 'USER_NOT_FOUND');
+
+  if (!user.otp || user.otp !== otp || !user.otpExpiresAt || user.otpExpiresAt < new Date()) {
+    throw new AppError('Invalid or expired OTP.', 401, 'INVALID_OTP');
+  }
+
+  user.passwordHash = newPassword;
+  user.otp = undefined;
+  user.otpExpiresAt = undefined;
+  await user.save();
+
+  logger.info(`Password successfully reset for: ${user.email}`);
+};
+
+module.exports = { register, login, refreshTokens, getProfile, updateProfile, changePassword, verifyOtp, requestPasswordReset, resetPassword };

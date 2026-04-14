@@ -9,6 +9,8 @@ export const authService = {
   getMe:    ()     => api.get('/auth/me'),
   updateMe: (data) => api.patch('/auth/me', data),
   changePassword: (data) => api.post('/auth/change-password', data),
+  requestPasswordReset: (data) => api.post('/auth/request-password-reset', data),
+  resetPassword: (data) => api.post('/auth/reset-password', data),
 };
 
 export const analyticsService = {

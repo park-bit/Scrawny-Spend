@@ -106,7 +106,12 @@ export default function Login() {
                   {showPw ? <EyeOff size={16} /> : <Eye size={16} />}
                 </button>
               </div>
-              {errors.password && <p className="mt-1.5 text-xs text-red-400">{errors.password}</p>}
+              <div className="flex justify-between items-center mt-1.5">
+                {errors.password ? <p className="text-xs text-red-400">{errors.password}</p> : <div/>}
+                <Link to="/forgot-password" className="text-xs text-amber-500/80 hover:text-amber-400 transition-colors">
+                  Forgot Password?
+                </Link>
+              </div>
             </div>
 
             {/* Submit */}

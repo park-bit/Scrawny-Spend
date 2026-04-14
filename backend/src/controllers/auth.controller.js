@@ -60,4 +60,18 @@ const verifyOtp = async (req, res, next) => {
   } catch (err) { return next(err); }
 };
 
-module.exports = { register, login, refresh, logout, getMe, updateMe, changePassword, verifyOtp };
+const requestPasswordReset = async (req, res, next) => {
+  try {
+    await authService.requestPasswordReset(req.body);
+    return sendSuccess(res, null, 'Password reset OTP sent to email.');
+  } catch (err) { return next(err); }
+};
+
+const resetPassword = async (req, res, next) => {
+  try {
+    await authService.resetPassword(req.body);
+    return sendSuccess(res, null, 'Password reset successful. Please login.');
+  } catch (err) { return next(err); }
+};
+
+module.exports = { register, login, refresh, logout, getMe, updateMe, changePassword, verifyOtp, requestPasswordReset, resetPassword };

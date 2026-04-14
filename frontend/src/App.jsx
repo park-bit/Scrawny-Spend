@@ -3,9 +3,10 @@ import useAuthStore from './store/authStore';
 import AppLayout    from './components/layout/AppLayout';
 
 // Pages
-import Login        from './pages/Login';
-import Register     from './pages/Register';
-import Dashboard    from './pages/Dashboard';
+import Login          from './pages/Login';
+import Register       from './pages/Register';
+import ForgotPassword from './pages/ForgotPassword';
+import Dashboard      from './pages/Dashboard';
 import AddExpense   from './pages/AddExpense';
 import History      from './pages/History';
 import Analytics    from './pages/Analytics';
@@ -28,6 +29,7 @@ export default function App() {
       {/* Public */}
       <Route path="/login"    element={<PublicRoute><Login    /></PublicRoute>} />
       <Route path="/register" element={<PublicRoute><Register /></PublicRoute>} />
+      <Route path="/forgot-password" element={<PublicRoute><ForgotPassword /></PublicRoute>} />
 
       {/* Protected – wrapped in persistent shell */}
       <Route path="/" element={<PrivateRoute><AppLayout /></PrivateRoute>}>
