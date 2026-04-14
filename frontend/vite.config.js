@@ -7,7 +7,7 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['favicon.svg', 'apple-touch-icon.png'],
+      includeAssets: ['logo.jpg'],
       manifest: {
         name: 'ScrawnySpend – Smart Expense Tracker',
         short_name: 'ScrawnySpend',
@@ -18,8 +18,8 @@ export default defineConfig({
         orientation: 'portrait',
         start_url: '/',
         icons: [
-          { src: 'pwa-192x192.png', sizes: '192x192', type: 'image/png' },
-          { src: 'pwa-512x512.png', sizes: '512x512', type: 'image/png', purpose: 'any maskable' },
+          { src: 'logo.jpg', sizes: '192x192', type: 'image/jpeg' },
+          { src: 'logo.jpg', sizes: '512x512', type: 'image/jpeg', purpose: 'any maskable' },
         ],
       },
       workbox: {
