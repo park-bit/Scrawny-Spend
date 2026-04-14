@@ -189,6 +189,7 @@ const resetPassword = async ({ email, otp, newPassword }) => {
   }
 
   user.passwordHash = newPassword;
+  user.isVerified = true;
   user.otp = undefined;
   user.otpExpiresAt = undefined;
   await user.save();
