@@ -39,4 +39,4 @@ export const MONTH_NAMES = [
   'Jul','Aug','Sep','Oct','Nov','Dec',
 ];
 
-export const API_BASE = import.meta.env.VITE_API_URL || '/api';
+export const API_BASE = '/api';
