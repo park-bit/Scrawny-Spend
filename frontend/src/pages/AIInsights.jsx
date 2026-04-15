@@ -189,23 +189,31 @@ export default function AIInsights() {
             <Sparkles size={20} className="text-indigo-400" />
           </h1>
           <p className="text-slate-400 text-sm mt-0.5">
-            {aiOk
-              ? 'AI engine active · anomaly detection running'
-              : 'AI engine warming up — some features may be limited'
+            {insightsLoading
+              ? 'Checking AI status...'
+              : aiOk
+                ? 'AI engine active · anomaly detection running'
+                : 'AI engine warming up — some features may be limited'
             }
           </p>
         </div>
-        {!aiOk && <RefreshCw size={16} className="text-slate-600 mt-1 animate-spin-slow" />}
+        {(insightsLoading || !aiOk) && <RefreshCw size={16} className="text-slate-600 mt-1 animate-spin-slow" />}
       </div>
 
       {/* ── AI status pill ─────────────────────────────────── */}
       <div className={`flex items-center gap-2 px-3 py-2 rounded-xl border text-xs ${
-        aiOk
-          ? 'bg-green-500/8 border-green-500/20 text-green-400'
-          : 'bg-amber-500/8 border-amber-500/20 text-amber-400'
+        insightsLoading ? 'bg-indigo-500/8 border-indigo-500/20 text-indigo-400' :
+        aiOk ? 'bg-green-500/8 border-green-500/20 text-green-400' :
+        'bg-amber-500/8 border-amber-500/20 text-amber-400'
       }`}>
-        <span className={`w-1.5 h-1.5 rounded-full animate-pulse-slow ${aiOk ? 'bg-green-400' : 'bg-amber-400'}`} />
-        {aiOk ? 'Python AI engine online' : 'AI engine initialising (free-tier cold start)'}
+        <span className={`w-1.5 h-1.5 rounded-full animate-pulse-slow ${
+          insightsLoading ? 'bg-indigo-400' :
+          aiOk ? 'bg-green-400' :
+          'bg-amber-400'
+        }`} />
+        {insightsLoading ? 'Connecting to Python AI engine...' : 
+         aiOk ? 'Python AI engine online' : 
+         'AI engine initialising (free-tier cold start)'}
       </div>
 
       {/* ── Tab bar ────────────────────────────────────────── */}

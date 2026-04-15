@@ -172,7 +172,7 @@ const predict = async (expenses) => {
   }));
 
   // Allow extra time — ANN may need to warm up on Render free tier
-  const result = await callAIEngine('/predict', { expenses: payload }, 20_000);
+  const result = await callAIEngine('/predict', { expenses: payload }, 45_000);
 
   if (!result?.prediction) {
     throw new AppError('AI engine returned an invalid prediction.', 502, 'AI_ENGINE_ERROR');

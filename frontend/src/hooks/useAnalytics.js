@@ -30,7 +30,7 @@ export const useAIInsights = () =>
   useQuery({
     queryKey: ['ai', 'insights'],
     queryFn:  () => aiService.getInsights().then((r) => r.data.data),
-    staleTime: 1000 * 60 * 5, // 5 min – AI calls are expensive
+    staleTime: 1000 * 30, // 30s – Allow faster recovery from cold-start timeouts
   });
 
 export const useAnomalies = (params) =>
