@@ -43,8 +43,9 @@ export const useAIPrediction = () =>
   useQuery({
     queryKey: ['ai', 'predict'],
     queryFn:  () => aiService.predict().then((r) => r.data.data),
-    staleTime: 1000 * 60 * 10,
-    retry: false, // prediction endpoint may 503 if AI engine is cold
+    staleTime: 1000 * 60, // 1 min
+    retry: 2,
+    retryDelay: (attempt) => Math.min(attempt * 2000, 10000),
   });
 
 export const useGeminiReport = () =>

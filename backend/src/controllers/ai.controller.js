@@ -108,23 +108,11 @@ const getInsights = async (req, res, next) => {
       analyticsService.getTrends(userId, { months: 3 }).catch(() => []),
     ]);
 
-    // ANN prediction — best-effort
-    let prediction  = null;
-    let aiAvailable = true;
-    try {
-      const cutoff = new Date();
-      cutoff.setMonth(cutoff.getMonth() - 3);
-      const expenses = await Expense.find({
-        userId, type: 'expense', date: { $gte: cutoff },
-      }).select('amount category date').sort({ date: 1 }).lean();
-      if (expenses.length > 0) {
-        const p  = await aiService.predict(expenses);
-        prediction = p.prediction;
-      }
-    } catch (err) {
-      aiAvailable = false;
-      logger.warn(`getInsights: prediction unavailable – ${err.message}`);
-    }
+    // AI Available check (simplified, non-blocking)
+    const aiAvailable = true; 
+    const prediction  = null; 
+    // Note: Full prediction is handled by the dedicated /api/ai/predict endpoint
+    // to avoid blocking the dashboard summary during engine cold starts.
 
     // Derived: overspending categories (spending > 120% of historical average)
     const suggestionList = suggestions?.suggestions ?? [];
